@@ -16,9 +16,21 @@ const closeModal = (event) => {
 	}
 };
 
+// закрытие модального окна по кнопке Escape
+const closeModalEsc = (event) => {
+	console.log("close");
+
+	if (event.code === "Escape") {
+		modalAdd.classList.add("hide");
+		modalItem.classList.add("hide");
+		document.removeEventListener("keydown", closeModalEsc);
+	}
+};
+
 addAd.addEventListener("click", () => {
 	modalAdd.classList.remove("hide");
 	modalBtnSubmit.disabled = true;
+	document.addEventListener("keydown", closeModalEsc);
 });
 
 modalAdd.addEventListener("click", closeModal);
@@ -29,5 +41,9 @@ catalog.addEventListener("click", (event) => {
 
 	if (target.closest(".card")) {
 		modalItem.classList.remove("hide");
+		document.addEventListener("keydown", closeModal);
 	}
 });
+
+// оформим проверку на полное заполнение формы модального окна
+// если все поля будут заполнены, то надпись пропадет
