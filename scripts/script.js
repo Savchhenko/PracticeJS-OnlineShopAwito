@@ -65,7 +65,6 @@ modalSubmit.addEventListener("submit", (event) => {
 	}
 	dataBase.push(itemObj); // добавили itemObj в dataBase
 	modalSubmit.reset();
-	console.log(dataBase);
 });
 
 addAd.addEventListener("click", () => {
