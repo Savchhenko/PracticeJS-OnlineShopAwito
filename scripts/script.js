@@ -10,14 +10,20 @@ const modalAdd = document.querySelector(".modal__add"),
 	modalSubmit = document.querySelector(".modal__submit"),
 	catalog = document.querySelector(".catalog"),
 	modalItem = document.querySelector(".modal__item"),
-	modalBtnWarning = document.querySelector(".modal__btn-warning");
+	modalBtnWarning = document.querySelector(".modal__btn-warning"),
+	modalFileInput = document.querySelector(".modal__file-input"),
+	modalFileBtn = document.querySelector(".modal__file-btn"),
+	modalImageAdd = document.querySelector(".modal__image-add");
+
+const textFileBtn = modalFileBtn.textContent;
+const srcModalImage = modalImageAdd.src;
 
 const elementsModalSubmit = [...modalSubmit.elements] //получили элементы из модального окна, кроме кнопок
 	.filter((elem) => elem.tagName !== "BUTTON");
 
-const saveDB = () => localStorage.setItem("awito", JSON.stringify(dataBase)); // отправляем данные в LocalStorage
+const infoPhoto = {};
 
-console.log(dataBase);
+const saveDB = () => localStorage.setItem("awito", JSON.stringify(dataBase)); // отправляем данные в LocalStorage
 
 //функция для проверки полей формы на заполненность
 const checkForm = () => {
@@ -38,9 +44,34 @@ const closeModal = (event) => {
 		modalItem.classList.add("hide");
 		document.removeEventListener("keydown", closeModal);
 		modalSubmit.reset(); //очистка формы
+		modalImageAdd.src = srcModalImage;
+		modalFileBtn.textContent = textFileBtn;
 		checkForm(); //возвращаем наш warning
 	}
 };
+
+modalFileInput.addEventListener("change", (event) => {
+	const target = event.target;
+
+	const reader = new FileReader(); //создали объект для чтения картинки
+
+	const file = target.files[0];
+
+	infoPhoto.filename = file.name;
+	infoPhoto.size = file.size;
+
+	reader.readAsBinaryString(file);
+
+	reader.addEventListener("load", (event) => {
+		if (infoPhoto.size < 200000) {
+			modalFileBtn.textContent = infoPhoto.filename; // записали имя картинки
+			infoPhoto.base64 = btoa(event.target.result);
+			modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`; // отобразили картинку в объявлении
+		} else {
+			modalFileBtn.textContent = "Размер файла не должен превышать 200кб";
+		}
+	});
+});
 
 modalSubmit.addEventListener("input", checkForm);
 
@@ -50,6 +81,7 @@ modalSubmit.addEventListener("submit", (event) => {
 	for (const elem of elementsModalSubmit) {
 		itemObj[elem.name] = elem.value;
 	}
+	itemObj.image = infoPhoto.base64; //добавили к объекту картинку
 	dataBase.push(itemObj); // добавили itemObj в dataBase
 	closeModal({ target: modalAdd });
 	saveDB();
