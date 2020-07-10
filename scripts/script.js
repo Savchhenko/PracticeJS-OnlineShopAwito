@@ -50,6 +50,25 @@ const closeModal = (event) => {
 	}
 };
 
+const renderCard = () => {
+	catalog.textContent = "";
+
+	dataBase.forEach((item, i) => {
+		catalog.insertAdjacentHTML(
+			"beforeend",
+			`
+			<li class="card" data-id="${i}">
+				<img class="card__image" src="data:image/jpeg;base64,${item.image}" alt="test" />
+				<div class="card__description">
+					<h3 class="card__header">${item.nameItem}</h3>
+					<div class="card__price">${item.costItem} ₽</div>
+				</div>
+			</li>
+		`
+		);
+	});
+};
+
 modalFileInput.addEventListener("change", (event) => {
 	const target = event.target;
 
@@ -69,6 +88,8 @@ modalFileInput.addEventListener("change", (event) => {
 			modalImageAdd.src = `data:image/jpeg;base64,${infoPhoto.base64}`; // отобразили картинку в объявлении
 		} else {
 			modalFileBtn.textContent = "Размер файла не должен превышать 200кб";
+			modalFileInput.value = "";
+			checkForm();
 		}
 	});
 });
@@ -85,6 +106,7 @@ modalSubmit.addEventListener("submit", (event) => {
 	dataBase.push(itemObj); // добавили itemObj в dataBase
 	closeModal({ target: modalAdd });
 	saveDB();
+	renderCard();
 });
 
 //открываем модальное окно
@@ -105,3 +127,7 @@ catalog.addEventListener("click", (event) => {
 
 modalAdd.addEventListener("click", closeModal);
 modalItem.addEventListener("click", closeModal);
+
+renderCard();
+
+// напишем функцию, которая будет создавать карточки на основе нашей базы данных
