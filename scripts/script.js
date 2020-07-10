@@ -1,6 +1,8 @@
 "use strict";
 
-const dataBase = []; // массив для хранения всех объявлений
+const dataBase = JSON.parse(localStorage.getItem("awito")) || []; // массив для хранения всех объявлений
+// массив форматируется из строки в другой формат, который можно считывать
+// но при отсутствии данных в LocalStorage, в массиве будет null, поэтому учитываем это,используя оператор ИЛИ и []
 
 const modalAdd = document.querySelector(".modal__add"),
 	addAd = document.querySelector(".add__ad"),
@@ -12,6 +14,10 @@ const modalAdd = document.querySelector(".modal__add"),
 
 const elementsModalSubmit = [...modalSubmit.elements] //получили элементы из модального окна, кроме кнопок
 	.filter((elem) => elem.tagName !== "BUTTON");
+
+const saveDB = () => localStorage.setItem("awito", JSON.stringify(dataBase)); // отправляем данные в LocalStorage
+
+console.log(dataBase);
 
 //функция для проверки полей формы на заполненность
 const checkForm = () => {
@@ -46,7 +52,7 @@ modalSubmit.addEventListener("submit", (event) => {
 	}
 	dataBase.push(itemObj); // добавили itemObj в dataBase
 	closeModal({ target: modalAdd });
-	console.log(dataBase);
+	saveDB();
 });
 
 //открываем модальное окно
