@@ -13,49 +13,30 @@ const modalAdd = document.querySelector(".modal__add"),
 const elementsModalSubmit = [...modalSubmit.elements] //получили элементы из модального окна, кроме кнопок
 	.filter((elem) => elem.tagName !== "BUTTON");
 
-const closeModal = (event) => {
-	const target = event.target;
-	if (target.classList.contains("modal__close") || target === modalAdd || target === modalItem) {
-		modalAdd.classList.add("hide");
-		modalItem.classList.add("hide");
-		modalSubmit.reset(); // сделали очистку формы
-	}
-};
-/* 
-другой вариант этой функции (через this)
-const closeModal = function(event) {
-	const target = event.target;
-	if (target.closest('.modal__close') || target === this) {
-		this.classList.add('hide');
-		if (this === modalAdd) {
-			modalSubmit.reset();
-		}
-	}
-};
-*/
-
-// закрытие модального окна по кнопке Escape
-const closeModalEsc = (event) => {
-	if (event.code === "Escape") {
-		modalAdd.classList.add("hide");
-		modalItem.classList.add("hide");
-		modalSubmit.reset();
-		document.removeEventListener("keydown", closeModalEsc); // удалили это событие после его выполнения
-	}
-};
-
-modalSubmit.addEventListener("input", () => {
+//функция для проверки полей формы на заполненность
+const checkForm = () => {
 	const validForm = elementsModalSubmit.every((elem) => elem.value); // если все поля ввода будут заполнены, значение поменяется на true
 	modalBtnSubmit.disabled = !validForm; // снимаем блокировку кнопки
 	modalBtnWarning.style.display = validForm ? "none" : ""; // убрали надпись "Заполните все поля"
-	/* или убрать надпись можно так:
-	if (validForm) {
-		modalBtnWarning.style.display = 'none'
-	} else {
-		modalBtnWarning.style.display = ''
+};
+
+//функция закрытия окон
+const closeModal = (event) => {
+	const target = event.target;
+	if (
+		target.closest(".modal__close") ||
+		target.classList.contains("modal") ||
+		event.code === "Escape"
+	) {
+		modalAdd.classList.add("hide");
+		modalItem.classList.add("hide");
+		document.removeEventListener("keydown", closeModal);
+		modalSubmit.reset(); //очистка формы
+		checkForm(); //возвращаем наш warning
 	}
-	*/
-});
+};
+
+modalSubmit.addEventListener("input", checkForm);
 
 modalSubmit.addEventListener("submit", (event) => {
 	event.preventDefault(); // чтобы страница не перезагружалась после нажатия на кнопку "отправить"
@@ -64,13 +45,15 @@ modalSubmit.addEventListener("submit", (event) => {
 		itemObj[elem.name] = elem.value;
 	}
 	dataBase.push(itemObj); // добавили itemObj в dataBase
-	modalSubmit.reset();
+	closeModal({ target: modalAdd });
+	console.log(dataBase);
 });
 
+//открываем модальное окно
 addAd.addEventListener("click", () => {
 	modalAdd.classList.remove("hide");
 	modalBtnSubmit.disabled = true;
-	document.addEventListener("keydown", closeModalEsc);
+	document.addEventListener("keydown", closeModal);
 });
 
 catalog.addEventListener("click", (event) => {
