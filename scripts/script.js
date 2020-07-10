@@ -1,5 +1,7 @@
 "use strict";
 
+const dataBase = []; // массив для хранения всех объявлений
+
 const modalAdd = document.querySelector(".modal__add"),
 	addAd = document.querySelector(".add__ad"),
 	modalBtnSubmit = document.querySelector(".modal__btn-submit"),
@@ -55,14 +57,22 @@ modalSubmit.addEventListener("input", () => {
 	*/
 });
 
+modalSubmit.addEventListener("submit", (event) => {
+	event.preventDefault(); // чтобы страница не перезагружалась после нажатия на кнопку "отправить"
+	const itemObj = {};
+	for (const elem of elementsModalSubmit) {
+		itemObj[elem.name] = elem.value;
+	}
+	dataBase.push(itemObj); // добавили itemObj в dataBase
+	modalSubmit.reset();
+	console.log(dataBase);
+});
+
 addAd.addEventListener("click", () => {
 	modalAdd.classList.remove("hide");
 	modalBtnSubmit.disabled = true;
 	document.addEventListener("keydown", closeModalEsc);
 });
-
-modalAdd.addEventListener("click", closeModal);
-modalItem.addEventListener("click", closeModal);
 
 catalog.addEventListener("click", (event) => {
 	const target = event.target;
@@ -73,5 +83,5 @@ catalog.addEventListener("click", (event) => {
 	}
 });
 
-// оформим проверку на полное заполнение формы модального окна
-// если все поля будут заполнены, то надпись пропадет
+modalAdd.addEventListener("click", closeModal);
+modalItem.addEventListener("click", closeModal);
