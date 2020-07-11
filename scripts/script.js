@@ -3,7 +3,7 @@
 const dataBase = JSON.parse(localStorage.getItem("awito")) || []; // массив для хранения всех объявлений
 // массив форматируется из строки в другой формат, который можно считывать
 // но при отсутствии данных в LocalStorage, в массиве будет null, поэтому учитываем это,используя оператор ИЛИ и []
-
+let counter = dataBase.length;
 const modalAdd = document.querySelector(".modal__add"),
 	addAd = document.querySelector(".add__ad"),
 	modalBtnSubmit = document.querySelector(".modal__btn-submit"),
@@ -20,6 +20,8 @@ const modalImageItem = document.querySelector(".modal__image-item"),
 	modalStatusItem = document.querySelector(".modal__status-item"),
 	modalDescriptionItem = document.querySelector(".modal__description-item"),
 	modalCostItem = document.querySelector(".modal__cost-item");
+
+const searchInput = document.querySelector(".search__input");
 
 const textFileBtn = modalFileBtn.textContent;
 const srcModalImage = modalImageAdd.src;
@@ -56,14 +58,14 @@ const closeModal = (event) => {
 	}
 };
 
-const renderCard = () => {
+const renderCard = (DB = dataBase) => {
 	catalog.textContent = "";
 
-	dataBase.forEach((item, i) => {
+	DB.forEach((item) => {
 		catalog.insertAdjacentHTML(
 			"beforeend",
 			`
-			<li class="card" data-id-item="${i}">
+			<li class="card" data-id="${item.id}">
 				<img class="card__image" src="data:image/jpeg;base64,${item.image}" alt="test" />
 				<div class="card__description">
 					<h3 class="card__header">${item.nameItem}</h3>
@@ -75,11 +77,22 @@ const renderCard = () => {
 	});
 };
 
+searchInput.addEventListener("input", () => {
+	const valueSearch = searchInput.value.trim().toLowerCase(); // метод trim() обрезает пробелы с обоих сторон, toLowerCase - все буквы делает строчными
+
+	if (valueSearch.length > 2) {
+		const result = dataBase.filter(
+			(item) =>
+				item.nameItem.toLowerCase().includes(valueSearch) ||
+				item.descriptionItem.toLowerCase().includes(valueSearch)
+		);
+		renderCard(result);
+	}
+});
+
 modalFileInput.addEventListener("change", (event) => {
 	const target = event.target;
-
 	const reader = new FileReader(); //создали объект для чтения картинки
-
 	const file = target.files[0];
 
 	infoPhoto.filename = file.name;
@@ -105,9 +118,11 @@ modalSubmit.addEventListener("input", checkForm);
 modalSubmit.addEventListener("submit", (event) => {
 	event.preventDefault(); // чтобы страница не перезагружалась после нажатия на кнопку "отправить"
 	const itemObj = {};
+
 	for (const elem of elementsModalSubmit) {
 		itemObj[elem.name] = elem.value;
 	}
+	itemObj.id = counter++;
 	itemObj.image = infoPhoto.base64; //добавили к объекту картинку
 	dataBase.push(itemObj); // добавили itemObj в dataBase
 	closeModal({ target: modalAdd });
@@ -127,7 +142,7 @@ catalog.addEventListener("click", (event) => {
 	const card = target.closest(".card");
 
 	if (card) {
-		const item = dataBase[card.dataset.idItem];
+		const item = dataBase.find((obj) => obj.id === +card.dataset.id); // теперь id карточек не меняется
 
 		modalImageItem.src = `data:image/jpeg;base64,${item.image}`; //вывод картинки в модальное окно по клику на карточку
 		modalHeaderItem.textContent = item.nameItem;
