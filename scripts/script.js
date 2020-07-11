@@ -15,6 +15,12 @@ const modalAdd = document.querySelector(".modal__add"),
 	modalFileBtn = document.querySelector(".modal__file-btn"),
 	modalImageAdd = document.querySelector(".modal__image-add");
 
+const modalImageItem = document.querySelector(".modal__image-item"),
+	modalHeaderItem = document.querySelector(".modal__header-item"),
+	modalStatusItem = document.querySelector(".modal__status-item"),
+	modalDescriptionItem = document.querySelector(".modal__description-item"),
+	modalCostItem = document.querySelector(".modal__cost-item");
+
 const textFileBtn = modalFileBtn.textContent;
 const srcModalImage = modalImageAdd.src;
 
@@ -57,7 +63,7 @@ const renderCard = () => {
 		catalog.insertAdjacentHTML(
 			"beforeend",
 			`
-			<li class="card" data-id="${i}">
+			<li class="card" data-id-item="${i}">
 				<img class="card__image" src="data:image/jpeg;base64,${item.image}" alt="test" />
 				<div class="card__description">
 					<h3 class="card__header">${item.nameItem}</h3>
@@ -118,8 +124,16 @@ addAd.addEventListener("click", () => {
 
 catalog.addEventListener("click", (event) => {
 	const target = event.target;
+	const card = target.closest(".card");
 
-	if (target.closest(".card")) {
+	if (card) {
+		const item = dataBase[card.dataset.idItem];
+
+		modalImageItem.src = `data:image/jpeg;base64,${item.image}`; //вывод картинки в модальное окно по клику на карточку
+		modalHeaderItem;
+		modalStatusItem;
+		modalDescriptionItem;
+		modalCostItem;
 		modalItem.classList.remove("hide");
 		document.addEventListener("keydown", closeModal);
 	}
@@ -129,5 +143,3 @@ modalAdd.addEventListener("click", closeModal);
 modalItem.addEventListener("click", closeModal);
 
 renderCard();
-
-// напишем функцию, которая будет создавать карточки на основе нашей базы данных
