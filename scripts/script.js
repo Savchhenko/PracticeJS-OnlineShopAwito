@@ -130,10 +130,11 @@ catalog.addEventListener("click", (event) => {
 		const item = dataBase[card.dataset.idItem];
 
 		modalImageItem.src = `data:image/jpeg;base64,${item.image}`; //вывод картинки в модальное окно по клику на карточку
-		modalHeaderItem;
-		modalStatusItem;
-		modalDescriptionItem;
-		modalCostItem;
+		modalHeaderItem.textContent = item.nameItem;
+		modalStatusItem.textContent = item.status === "new" ? "Новый" : "Б/У";
+		modalDescriptionItem.textContent = item.descriptionItem;
+		modalCostItem.textContent = item.costItem;
+
 		modalItem.classList.remove("hide");
 		document.addEventListener("keydown", closeModal);
 	}
